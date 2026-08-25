@@ -1,0 +1,301 @@
+---
+title: "Basic Probability and Statistics with R"
+author: "Roberto Molinari"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+# Introductions
+
+This document introduces fundamental statistical and probability operations in R. The examples cover:
+
+1. Basic mathematical calculations
+2. Probability distributions
+3. Summary statistics
+4. Factor variables
+5. Exploring built-in datasets
+
+These concepts form the foundation for statistical computing and data analysis in R.
+
+---
+
+# 1. Simple Calculations
+
+R can be used as a scientific calculator. It supports arithmetic operations, mathematical functions, and constants.
+
+```{r}
+2 + 2
+4 / 2
+3 * 2^(-0.8)
+sqrt(2)
+pi
+log(2)
+log(9, base = 3)
+exp(1.1)
+cos(sqrt(0.9))
+```
+
+## Explanation
+
+- `+`, `-`, `*`, and `/` perform basic arithmetic.
+- `^` raises a number to a power.
+- `sqrt()` computes square roots.
+- `pi` returns the mathematical constant π.
+- `log()` computes logarithms. By default, the natural logarithm is used.
+- `exp()` computes the exponential function \(e^x\).
+- `cos()` computes the cosine of an angle measured in radians.
+
+### Storing Results in Variables
+
+Results can be assigned to objects using the assignment operator `<-`.
+
+```{r}
+z <- sqrt(0.9)
+cos(z)
+```
+
+Here:
+
+- `sqrt(0.9)` is stored in the object `z`.
+- The value of `z` is then used as the argument of the cosine function.
+
+---
+
+# 2. Probability Distributions
+
+R provides many probability distributions through a consistent naming convention.
+
+## Distribution Function Prefixes
+
+For a distribution called `xxx`:
+
+| Prefix | Meaning |
+|----------|----------|
+| `dxxx` | Density or probability mass function |
+| `pxxx` | Cumulative probability |
+| `qxxx` | Quantile function |
+| `rxxx` | Random number generation |
+
+For example, the normal distribution uses:
+
+- `dnorm()`
+- `pnorm()`
+- `qnorm()`
+- `rnorm()`
+
+---
+
+## Example: Normal Distribution
+
+Suppose test scores follow a normal distribution:
+
+\[
+X \sim N(70, 15^2)
+\]
+
+We want to calculate:
+
+\[
+P(X > 90)
+\]
+
+```{r}
+pnorm(
+  q = 90,
+  mean = 70,
+  sd = 15,
+  lower.tail = FALSE
+)
+```
+
+### Explanation
+
+- `q = 90` specifies the value of interest.
+- `mean = 70` is the population mean.
+- `sd = 15` is the population standard deviation.
+- `lower.tail = FALSE` returns the probability above 90.
+
+This computes:
+
+\[
+P(X > 90)
+\]
+
+The same function can be called using positional arguments:
+
+```{r}
+pnorm(q = 90)
+pnorm(90, 70, 15)
+```
+
+The first call uses the standard normal distribution \(N(0,1)\), while the second uses \(N(70,15^2)\).
+
+---
+
+## Density Function
+
+```{r}
+dnorm(90, mean = 70, sd = 15)
+```
+
+This computes the height of the normal density curve at \(x=90\).
+
+Note that a density value is **not** the same as a probability.
+
+---
+
+## Quantiles
+
+```{r}
+qnorm(0.95, mean = 70, sd = 15)
+```
+
+This finds the score corresponding to the 95th percentile.
+
+In other words, 95% of observations are expected to fall below this value.
+
+---
+
+## Random Number Generation
+
+```{r}
+set.seed(985)
+
+z <- rnorm(
+  mean = 70,
+  sd = 15,
+  n = 1000
+)
+```
+
+### Explanation
+
+- `rnorm()` generates random observations from a normal distribution.
+- `n = 1000` specifies the sample size.
+- `set.seed()` ensures that results are reproducible.
+
+The object `z` now contains 1000 simulated test scores.
+
+---
+
+# 3. Summary Statistics
+
+Consider the sample:
+
+```{r}
+x <- c(12, 15, 18, 20, 22, 25, 30)
+```
+
+---
+
+## Measures of Center and Spread
+
+```{r}
+mean(x)
+median(x)
+var(x)
+sd(x)
+```
+
+### Explanation
+
+- `mean()` computes the arithmetic average.
+- `median()` computes the middle observation.
+- `var()` computes sample variance.
+- `sd()` computes sample standard deviation.
+
+These statistics summarize the center and variability of the data.
+
+---
+
+## Statistics for Simulated Data
+
+```{r}
+mean(z)
+median(z)
+var(z)
+sd(z)
+```
+
+Because `z` was generated from a normal distribution with mean 70 and standard deviation 15, the sample statistics should be close to those values.
+
+---
+
+## Quantiles
+
+```{r}
+quantile(z, probs = 0.95)
+qnorm(0.95, mean = 70, sd = 15)
+```
+
+### Comparison
+
+- `quantile()` calculates the empirical 95th percentile from the simulated sample.
+- `qnorm()` calculates the theoretical 95th percentile from the population distribution.
+
+The values should be similar but not necessarily identical due to sampling variability.
+
+---
+
+## Interquartile Range
+
+```{r}
+IQR(x)
+```
+
+The interquartile range (IQR) measures spread using:
+
+\[
+IQR = Q_3 - Q_1
+\]
+
+where:
+
+- \(Q_1\) = first quartile
+- \(Q_3\) = third quartile
+
+The IQR is resistant to outliers.
+
+---
+
+## Minimum and Maximum
+
+```{r}
+min(x)
+max(x)
+range(x)
+```
+
+### Explanation
+
+- `min()` returns the smallest observation.
+- `max()` returns the largest observation.
+- `range()` returns both values.
+
+---
+
+## Summary Function
+
+```{r}
+summary(x)
+```
+
+This provides:
+
+- Minimum
+- First Quartile
+- Median
+- Mean
+- Third Quartile
+- Maximum
+
+It is a quick overview of a numeric variable.
+
+---
+
+# 4. Factor Variables
+
+Factors are used to represent categorical variables.
+
+```{r}
+colors
