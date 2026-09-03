@@ -6,5 +6,6 @@ git config --global --list
 
 # Section 1
 test change 
+x <- 2
 
 # Section 2
